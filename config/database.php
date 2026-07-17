@@ -57,11 +57,11 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => env('DB_HOST', 'dpg-d9d61hurnols73cue66g-a'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+            'database' => env('DB_DATABASE', 'my_3py7'),
+            'username' => env('DB_USERNAME', 'my_3py7_user'),
+            'password' => env('DB_PASSWORD', '2RA7Oty67pkYNkuhwunWUg0QYP2djX8i'),
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',
