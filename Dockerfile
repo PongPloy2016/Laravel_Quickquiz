@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# 1. ติดตั้ง Extensions ที่ Laravel และ PostgreSQL จำเป็นต้องใช้
+# 1. ติดตั้ง Extensions ที่ Laravel จำเป็นต้องใช้
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
@@ -24,14 +24,19 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 WORKDIR /var/www/html
 COPY . .
 
-# 5. ติดตั้ง Composer (ใส่ --no-scripts เพื่อข้ามปัญหาสคริปต์ Auth::routes() พังตอน Build)
+# 5. ติดตั้ง Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
-# 6. ตั้งสิทธิ์โฟลเดอร์ Storage และ Cache
-RUN chown -R www-data:www-data storage bootstrap/cache
+# 6. สร้างโฟลเดอร์และตั้งสิทธิ์ Permission (แก้ไขจุดนี้เพื่อความปลอดภัย)
+RUN mkdir -p storage/framework/cache/data \
+    storage/framework/app/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
 
-# 7. คำสั่งตอนเปิด Container
+# 7. คำสั่งเปิดรันเว็บ
 CMD php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear && \
