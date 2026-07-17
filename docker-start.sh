@@ -1,6 +1,4 @@
 #!/bin/bash
-# set -x = พิมพ์ทุกคำสั่งก่อนรัน (debug mode)
-# ลบ set -e ออก เพราะทำให้ script หยุดทันทีที่มี error ใดๆ
 set -x
 
 echo "==> [1] Starting Laravel application..."
@@ -9,9 +7,11 @@ echo "==> Working dir: $(pwd)"
 echo "==> APP_KEY set: $([ -n "$APP_KEY" ] && echo YES || echo NO)"
 echo "==> DB_HOST set: $([ -n "$DB_HOST" ] && echo YES || echo NO)"
 
-# สร้าง .env จาก environment variables
-echo "==> [2] Writing .env file..."
-cat > /var/www/html/.env << ENVEOF
+# ถ้า Render ตั้ง DB_HOST ไว้ใน Environment Variables → ให้ overwrite .env
+# ถ้าไม่ → ใช้ .env ที่ COPY มาจาก repo (local values)
+if [ -n "$DB_HOST" ]; then
+    echo "==> [2] DB_HOST found in env vars, writing fresh .env from Render environment..."
+    cat > /var/www/html/.env << ENVEOF
 APP_NAME=${APP_NAME:-QuickQuiz}
 APP_ENV=${APP_ENV:-production}
 APP_KEY=${APP_KEY:-}
@@ -33,8 +33,12 @@ QUEUE_CONNECTION=sync
 QUEUE_DRIVER=sync
 ENVEOF
 
-echo "==> .env written successfully"
-cat /var/www/html/.env | grep -v PASSWORD | grep -v KEY
+    echo "==> .env written successfully"
+    cat /var/www/html/.env | grep -v PASSWORD | grep -v KEY
+else
+    echo "==> [2] No DB_HOST in env vars, using .env from repo..."
+    cat /var/www/html/.env | grep -v PASSWORD | grep -v KEY
+fi
 
 # Generate APP_KEY ถ้าว่าง
 if [ -z "$APP_KEY" ]; then
