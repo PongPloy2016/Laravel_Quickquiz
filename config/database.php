@@ -57,7 +57,7 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env('DB_HOST', 'dpg-d9d61hurnols73cue66g-a'),
+            'host' => env('DB_HOST', 'dpg-d9d61hurnols73cue66g-a.oregon-postgres.render.com'),
             'port' => env('DB_PORT', '5432'),
             'database' => env('DB_DATABASE', 'my_3py7'),
             'username' => env('DB_USERNAME', 'my_3py7_user'),
@@ -65,7 +65,7 @@ return [
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',
-            'sslmode' => 'prefer',
+            'sslmode' => 'require',
         ],
 
         'sqlsrv' => [
