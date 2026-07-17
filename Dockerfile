@@ -24,11 +24,14 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 WORKDIR /var/www/html
 COPY . .
 
-# 5. ติดตั้ง Composer
+# 5. ติดตั้ง Composer 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
-# 6. สร้างโฟลเดอร์และตั้งสิทธิ์ Permission (แก้ไขจุดนี้เพื่อความปลอดภัย)
+# 6. บังคับทำ dump-autoload หลังจากไฟล์เข้ามาครบ เพื่อเคลียร์ปัญหาคลาสพัง (เพิ่มบรรทัดนี้)
+RUN composer dump-autoload --optimize --no-scripts
+
+# 7. สร้างโฟลเดอร์และตั้งสิทธิ์ Permission
 RUN mkdir -p storage/framework/cache/data \
     storage/framework/app/cache \
     storage/framework/sessions \
@@ -36,8 +39,5 @@ RUN mkdir -p storage/framework/cache/data \
     bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
-# 7. คำสั่งเปิดรันเว็บ
-CMD php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan view:clear && \
-    apache2-foreground
+# 8. คำสั่งเปิดรันเว็บ (เอา php artisan ออกไปก่อนเพื่อทดสอบว่า Apache บูทผ่านไหม)
+CMD apache2-foreground
