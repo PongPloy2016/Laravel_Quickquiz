@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: Laravel_Quickquiz
+    env: docker
+    plan: free # หรือ plan ที่ต้องการ
+    envVars:
+      - key: APP_KEY
+        generateValue: true
